@@ -21,7 +21,7 @@ class App extends BaseConfig
 	| environments.
 	|
 	*/
-	public $baseURL = 'http://localhost/gsbFrameWork';
+	public $baseURL = 'http://localhost/Gr_5_SLAM_2021_PHP_MVC_SECURISEE_WilhemSorek_GuewenLeBechennec/Gr_5_SLAM_2021_PHP_MVC_SECURISEE_WilhemSorek_GuewenLeBechennec-';
 
 	/*
 	|--------------------------------------------------------------------------
