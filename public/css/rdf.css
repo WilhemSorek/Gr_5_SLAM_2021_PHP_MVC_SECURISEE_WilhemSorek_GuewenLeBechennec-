@@ -1,0 +1,69 @@
+body
+{
+	background-color: #C0C3CC;
+	font-family: 'Barlow Semi Condensed',sans-serif;
+}
+
+h2
+{
+	font-size: 22px;
+	text-decoration: underline;
+
+
+}
+.aside1
+{
+	position: absolute;
+	left: 5%;
+	top: 30%;
+	width: 30%;
+	height: 30%;
+	border: solid 5px black;
+	background-color: #C4292D;
+	text-align:center;
+	color: whitesmoke;
+}
+
+.aside2
+{
+	position: absolute;
+	left: 65%;
+	top: 30%;
+	height: 30%;
+	width: 30%;
+	border: solid 5px black;
+	background-color: #C4292D;
+	text-align:center;
+	color: whitesmoke;
+}
+
+
+.im2
+{
+	position: fixed;
+	width: 25%;
+	height: auto;
+	top: 30%;
+	left: 38%;
+	border-bottom: white ;
+}
+
+.liste1
+{
+	margin-top: 1%;
+	
+	left: 10%;
+	top: 400%;
+	height: 40%;
+	width: 30%;
+	text-align: left;
+	border: solid 5px black;
+	background-color: #C4292D;
+
+}
+
+}
+.autreform
+{
+	text-align: center;
+}
