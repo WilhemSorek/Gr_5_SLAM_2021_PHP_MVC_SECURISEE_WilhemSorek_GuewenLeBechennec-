@@ -75,7 +75,7 @@ public function insertHorsForfait()
 	session_start();
 		$Modele = new \App\Models\Modele();
 
-		$Modele->insertFraisHF(htmlspecialchars($_SESSION['id']), $Modele->moisTrad(), htmlspecialchars($_POST['libelle']), $Modele->today(), htmlspecialchars($_POST['montant']));
+		$Modele->insertFraisHF(htmlspecialchars($_SESSION['id'], $Modele->moisTrad(), htmlspecialchars($_POST['libelle']), $Modele->today(), htmlspecialchars($_POST['montant']));
 		$Modele->modifDateFicheFrais($Modele->today(), htmlspecialchars($_SESSION['id']), $Modele->moisTrad());
 		echo view('acceuil.php');
 }
