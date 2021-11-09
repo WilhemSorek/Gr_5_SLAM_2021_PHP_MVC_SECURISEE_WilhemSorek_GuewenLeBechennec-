@@ -34,7 +34,7 @@ class Database extends \CodeIgniter\Database\Config
 		'hostname' => '192.168.43.120',
 		'username' => 'admindb',
 		'password' => 'password',
-		'database' => 'gsbV2',
+		'database' => 'gsbv2',
 		'DBDriver' => 'mysqli',
 		'DBPrefix' => '',
 		'pConnect' => false,

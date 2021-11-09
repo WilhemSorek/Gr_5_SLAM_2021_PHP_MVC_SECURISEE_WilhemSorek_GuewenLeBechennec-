@@ -24,13 +24,13 @@ public function login($id, $mdp) {
 
 	$db = db_connect();
 
-    $sql = 'SELECT id from Visiteur WHERE login = ? AND mdp = ?';
+    $sql =$db->prepare('SELECT id from Visiteur WHERE login= :login AND mdp= :mdp');
+    $sql->bindparam(':login', $id);
+    $sql->bindparam(':mdp', $mdp);
 	
-    $resultat = $db->query($sql, [$id, $mdp]);
+    $sql->execute();
 
-	$resultat = $resultat->getResult();
-
-    return $resultat;
+    return $sql;
    
 }
 
@@ -50,17 +50,10 @@ public function verifFicheFrais($id, $datefr) {
 //=====================================
 // rédaction de la requete sql préparée
 //=====================================
-	$sql = 'SELECT * from FicheFrais WHERE idVisiteur = ? AND mois = ?';
-	
-//=====================================================
-// execution de la requete sql en passant un parametre id
-//=====================================================	
-    $resultat = $db->query($sql, [$id, $datefr]);
-	
-//=============================
-// récupération des données de la requete sql
-//=============================
-	$resultat = $resultat->getResult();
+	$sql = $db->prepare('SELECT * from FicheFrais WHERE idVisiteur = :idVisiteur AND mois = :mois ');
+	$sql->bindparam(':idVisiteur', $id);
+    $sql->bindparm(':mois', $datefr);
+    $resultat = $sql->execute();
 
 //=============================
 // renvoi du résultat au Controleur
@@ -78,8 +71,16 @@ public function verifFicheFrais($id, $datefr) {
 public function creationFicheFrais($id, $datefr, $today) 
 {
 $db = db_connect();
-$sql = 'INSERT INTO FicheFrais values (?, ?, ?, ?, ?, ?)';
-$db->query($sql, [$id,$datefr, 0, 0, $today, "CR"]);
+$sql = $db->prepare('INSERT INTO FicheFrais values (:id, :mois, :nbJustification, :montant, :date, :etat)');
+$sql->bindparam(':id', $id);
+$sql->bindparam(':mois', $datefr);
+$sql->bindparam(':nbJustification', 0);
+$sql->bindparam(':montant', 0);
+$sql->bindparam(':date', $today);
+$sql->bindparam(':etat', "CR");
+$sql->execute();
+
+return $sql;
 }
 
 //=========================================================================
@@ -91,8 +92,14 @@ $db->query($sql, [$id,$datefr, 0, 0, $today, "CR"]);
 public function creationLigneETP($id, $datefr) 
 {
     $db = db_connect();
-    $sql = 'INSERT INTO LigneFraisForfait values (?, ?, ?, ?)';
-    $db->query($sql, [$id, $datefr, "ETP", 0]);
+    $sql = $db->prepare('INSERT INTO LigneFraisForfait values (:id, :mois, :type, :montant)');
+    $sql->bindparam(':id', $id);
+    $sql->bindparam(':mois', $datefr);
+    $sql->bindparam(':type', "ETP");
+    $sql->bindparam('montant', 0);
+    $sql->execute();
+
+    return $sql;
 }
 
 //=========================================================================
@@ -103,8 +110,14 @@ public function creationLigneETP($id, $datefr)
 
 public function creationLigneKM($id, $datefr) {
     $db = db_connect();
-    $sql = 'INSERT INTO LigneFraisForfait values (?, ?, ?, ?)';
-    $db->query($sql, [$id,$datefr, "KM", 0]);
+    $sql = $db->prepare('INSERT INTO LigneFraisForfait values (:id, :mois, :type, :montant)');
+    $sql->bindparam(':id', $id);
+    $sql->bindparam(':mois', $datefr);
+    $sql->bindparam(':type', "KM");
+    $sql->bindparam('montant', 0);
+    $sql->execute();
+
+    return $sql;
 }
 
 //=========================================================================
@@ -116,8 +129,14 @@ public function creationLigneKM($id, $datefr) {
 public function creationLigneNUI($id, $datefr)
 {
     $db = db_connect();
-    $sql = 'INSERT INTO LigneFraisForfait values (?, ?, ?, ?)';
-    $db->query($sql, [$id,$datefr, "NUI", 0]);
+    $sql = $db->prepare('INSERT INTO LigneFraisForfait values (:id, :mois, :type, :montant)');
+    $sql->bindparam(':id', $id);
+    $sql->bindparam(':mois', $datefr);
+    $sql->bindparam(':type', "NUI");
+    $sql->bindparam('montant', 0);
+    $sql->execute();
+
+    return $sql;
 }
 
 //=========================================================================
@@ -129,8 +148,14 @@ public function creationLigneNUI($id, $datefr)
 public function creationLigneREP($id, $datefr)
 {
     $db = db_connect();
-    $sql = 'INSERT INTO LigneFraisForfait values (?, ?, ?, ?)';
-    $db->query($sql, [$id,$datefr, "REP", 0]);
+    $sql = $db->prepare('INSERT INTO LigneFraisForfait values (:id, :mois, :type, :montant)');
+    $sql->bindparam(':id', $id);
+    $sql->bindparam(':mois', $datefr);
+    $sql->bindparam(':type', "REP");
+    $sql->bindparam('montant', 0);
+    $sql->execute();
+
+    return $sql;
 }
 
 //=========================================================================
@@ -142,8 +167,13 @@ public function creationLigneREP($id, $datefr)
 public function updateFrais($nbJusti, $frais, $mois)
 {
     $db = db_connect();
-    $sql = 'UPDATE LigneFraisForfait SET quantite = ? WHERE idFraisForfait = ? and mois = ?';
-    $db->query($sql, [$nbJusti, $frais, $mois]);
+    $sql = $db->prepare('UPDATE LigneFraisForfait SET quantite = :qte WHERE idFraisForfait = :idfrais and mois = :mois');
+    $sql->bindparam(':qte', $nbJusti);
+    $sql->bindparam('idfrais', $frais);
+    $sql->bindparam(':mois', $mois);
+    $sql->execute();
+
+    return $sql;
 }
 
 //=========================================================================
@@ -155,9 +185,16 @@ public function updateFrais($nbJusti, $frais, $mois)
 public function insertFraisHF($id, $datefr, $libelle, $today, $montant)
 {
     $db = db_connect();
-    $sql = 'INSERT into LigneFraisHorsForfait (idVisiteur, mois, libelle, date, montant)
-    values (?, ?, ?, ?, ?)';
-    $db->query($sql, [$id, $datefr, $libelle, $today, $montant]); 
+    $sql = $db->prepare('INSERT into LigneFraisHorsForfait (idVisiteur, mois, libelle, date, montant)
+    values (:id, :mois, :libelle, :date, :montant)');
+    $sql->bindparam(':id', $id); 
+    $sql->bindparam(':mois', $datefr);
+    $sql->bindparam('libelle', $libelle);
+    $sql->bindparam(':date', $today);
+    $sql->bindparam(':montant', $montant);
+    $sql->execute();
+
+    return $sql;
 }
 
 //=========================================================================
@@ -169,29 +206,33 @@ public function insertFraisHF($id, $datefr, $libelle, $today, $montant)
 public function selectVDHF($id, $mois)
 {
     $db = db_connect();
-    $sql = 'SELECT * from LigneFraisHorsForfait WHERE idVisiteur = ? AND mois = ?';
-    $trad = $this->moisTrad();
-    $resultat = $db->query($sql, [$id, $trad]);
-    $resultat = $resultat->getResult();
+    $sql = $db->prepare('SELECT * from LigneFraisHorsForfait WHERE idVisiteur = :id AND mois = :mois');
+    $sql->bindparam(':id', $id);
+    $sql->bidnparam(':mois', $mois);
+    $sql->execute();
 
-    return $resultat;
+    return $sql;
 }
 public function selectVDF($id, $mois)
 {
     $db = db_connect();
-    $sql = 'SELECT * from LigneFraisForfait WHERE idVisiteur = ? AND mois = ?';
-    $trad = $this->moisTrad();
-    $resultat = $db->query($sql, [$id, $trad]);
-    $resultat = $resultat->getResult();
+    $sql = $db->prepare('SELECT * from LigneFraisForfait WHERE idVisiteur = :id AND mois = :mois');
+    $sql->bindparam(':id', $id);
+    $sql->bindparam(':mois', $mois)
 
-    return $resultat;
+    return $sql;
 }
 
 public function modifDateFicheFrais($today, $id, $datefr)
 {
     $db = db_connect();
-    $sql = 'UPDATE FicheFrais set dateModif = ? where idVisiteur = ? and mois = ?';
-    $db->query($sql, [$today, $id, $datefr]);
+    $sql = $db->prepare('UPDATE FicheFrais set dateModif = :dateModif where idVisiteur = :id and mois = :mois');
+    $sql->bindparam('dateModif', $today);
+    $sql->bindparam('id', $id);
+    $sql->bindparam('mois', $datefr);
+    $sql->execute();
+
+    return $sql;
 }
 
 public function moisTrad()
