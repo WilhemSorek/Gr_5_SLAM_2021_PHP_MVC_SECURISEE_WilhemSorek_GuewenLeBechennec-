@@ -244,8 +244,22 @@ public function today()
 {
     return date('Y-m-d');
 }
-//fin de la classe
+public function verifNbConnexion($ip)
+{
+    $db = db_connect();
+    $sql = 'SELECT * from connexion where ip = ?';
+    $result = $db->query($sql, [$ip]);
+    $result = $result->getResult();
+
+    $count = $result->rowCount();
+    return $count;
 }
 
-
+public function ajoutTentativeConnexionEchouee($ip)
+{
+    $db = db_connect();
+    $sql = 'INSERT into connexion values ?';
+    $result = $db->query($sql, [$ip]);
+}
+}
 ?>

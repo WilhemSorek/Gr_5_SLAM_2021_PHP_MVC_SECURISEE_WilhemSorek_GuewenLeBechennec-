@@ -43,9 +43,15 @@ public function index()
 
 	elseif (isset($_POST['identifiant']))
 	{
+		$ip = $_SERVER['REMOTE_ADDR'];
+		if ($Modele->verifNbConnexion($ip) < 10) {
 		$this->verif(htmlspecialchars($_POST['identifiant']), htmlspecialchars($_POST['password']));
 
 		sleep(1);
+		}
+		else {
+			$Modele->ajoutTentativeConnexionEchouee($ip);
+		}
 	}
 	elseif (isset($_POST['quantite']))
 	{
