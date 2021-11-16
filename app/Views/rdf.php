@@ -1,3 +1,9 @@
+<?php
+$token = bin2hex(mycrpt_create_iv(32, MYCRPT_DEV_URANDOM));
+
+$_SESSION['token'] = $token;
+?>
+
 <!DOCTYPE html>
 
 <html>
@@ -27,6 +33,7 @@
                     <input type="number" name="quantite" min="0" value="0">
                     <br>
                     <br>
+                    <input type="hidden" name="token" id="token" value="<?php echo $token ?>">
                     <input type="submit" value="Envoyer">
             </form></div>
         </aside>
