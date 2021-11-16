@@ -44,6 +44,8 @@ public function index()
 	elseif (isset($_POST['identifiant']))
 	{
 		$this->verif(htmlspecialchars($_POST['identifiant']), htmlspecialchars($_POST['password']));
+
+		sleep(1);
 	}
 	elseif (isset($_POST['quantite']))
 	{
@@ -65,10 +67,20 @@ public function updateFrais()
 	session_start();
 		$Modele = new \App\Models\Modele();
 
-		$Modele->updateFrais(htmlspecialchars($_POST['quantite']), htmlspecialchars($_POST['idfrais']), $Modele->moisTrad());
-		$Modele->modifDateFicheFrais($Modele->today(), htmlspecialchars($_SESSION['id']), $Modele->moisTrad());
-
-		echo view('acceuil.php');
+		if (isset($_SESSION['token']) AND isset($_POST['token']) AND !empty($_SESSION['token']) AND !empty($_POST['token'])) {
+			if ($_SESSION['token'] == $_POST['token']){	
+				if($_SERVER['HTTP_REFERER'] == 'http://localhost/Gr_5_SLAM_2021_PHP_MVC_SECURISEE_WilhemSorek_GuewenLeBechennec/Gr_5_SLAM_2021_PHP_MVC_SECURISEE_WilhemSorek_GuewenLeBechennec-/public/index.php?action=renseigner'){
+					$Modele->updateFrais(htmlspecialchars($_POST['quantite']), htmlspecialchars($_POST['idfrais']), $Modele->moisTrad());
+					$Modele->modifDateFicheFrais($Modele->today(), htmlspecialchars($_SESSION['id']), $Modele->moisTrad());
+				
+					echo view('acceuil.php');
+				}
+			}
+		}
+		else {
+			echo view('rdf.php');
+		}
+		
 }
 public function insertHorsForfait()
 {

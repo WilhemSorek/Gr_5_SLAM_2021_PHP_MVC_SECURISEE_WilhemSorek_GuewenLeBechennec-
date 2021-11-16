@@ -1,5 +1,5 @@
 <?php
-$token = bin2hex(mycrpt_create_iv(32, MYCRPT_DEV_URANDOM));
+$token = bin2hex(random_bytes(32));
 
 $_SESSION['token'] = $token;
 ?>
