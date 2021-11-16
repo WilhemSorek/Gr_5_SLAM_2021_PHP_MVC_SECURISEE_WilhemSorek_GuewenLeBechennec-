@@ -249,9 +249,8 @@ public function verifNbConnexion($ip)
     $db = db_connect();
     $sql = 'SELECT * from connexion where ip = ?';
     $result = $db->query($sql, [$ip]);
-    $result = $result->getResult();
 
-    $count = $result->rowCount();
+    $count = $result->columnCount();
     return $count;
 }
 

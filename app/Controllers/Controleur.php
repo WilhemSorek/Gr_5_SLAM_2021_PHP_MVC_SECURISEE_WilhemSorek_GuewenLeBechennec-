@@ -42,7 +42,8 @@ public function index()
 	}
 
 	elseif (isset($_POST['identifiant']))
-	{
+	{ 
+		$Modele = new \App\Models\Modele();
 		$ip = $_SERVER['REMOTE_ADDR'];
 		if ($Modele->verifNbConnexion($ip) < 10) {
 		$this->verif(htmlspecialchars($_POST['identifiant']), htmlspecialchars($_POST['password']));
