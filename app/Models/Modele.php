@@ -249,16 +249,18 @@ public function verifNbConnexion($ip)
     $db = db_connect();
     $sql = 'SELECT * from connexion where ip = ?';
     $result = $db->query($sql, [$ip]);
+    $result = $result->getResult();
+    $count = sizeof($result);
 
-    $count = $result->columnCount();
     return $count;
 }
 
 public function ajoutTentativeConnexionEchouee($ip)
 {
     $db = db_connect();
-    $sql = 'INSERT into connexion values ?';
-    $result = $db->query($sql, [$ip]);
+    $sql = 'INSERT into connexion values (?)';
+    $db->query($sql, [$ip]);
 }
+
 }
 ?>
