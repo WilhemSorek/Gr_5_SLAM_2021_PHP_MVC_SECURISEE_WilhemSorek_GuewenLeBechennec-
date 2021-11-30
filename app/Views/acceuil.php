@@ -9,6 +9,9 @@
     <body>
         <img class="logo" src="<?php echo base_url('/public/images/logogsb.png'); ?>" alt="logo">
 
+        <form action="index.php" method="post"> 
+        <input type="hidden" name="token" id="token" value="<?php echo $_SESSION['token'] ?>"/>
+        </form>
         <div class="titre">Veuillez cliquez sur l'icone correspondant à votre choix :</div>
 
         <div class="renseignez">Renseignez fiche de frais</div>

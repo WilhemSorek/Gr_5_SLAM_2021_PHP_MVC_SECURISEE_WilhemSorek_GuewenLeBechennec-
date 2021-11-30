@@ -17,12 +17,26 @@ class Controleur extends Controller {
 //=====================================================================
 public function index()
 {
-	if (isset($_POST['identifiant']))
+	session_start();
+    $token = bin2hex(random_bytes(32));
+
+    $_SESSION['token'] = $token;
+	if (isset($_GET['action']))
+	{
+		$action = $_GET['action'];
+	}
+	else
+	{
+		$action = 'retourConnexion';
+	}
+	if (isset($_POST['identifiant']) && strlen($_POST['identifiant']) <= 25 && strlen($_POST['password']) <= 25)
 	{ 
+		$crypt  = Chiffrement::crypt($_POST['password']);
+
 		$Modele = new \App\Models\Modele();
 		$ip = $this->recupIP();
 		if ($Modele->verifNbConnexion($ip)< 10) {
-		$this->verif(htmlspecialchars($_POST['identifiant']), htmlspecialchars($_POST['password']));
+			$action = 'connexion';
 
 		sleep(1);
 		}
@@ -32,94 +46,78 @@ public function index()
 	}
 	elseif (isset($_POST['quantite']))
 	{
-		$this->updateFrais();
+		$action = 'updateFF';
 	}
 	elseif (isset($_POST['libelle']))
 	{
-		$this->insertHorsForfait();
+		$action = 'insertFHF';
+	}
+
+	if(!isset($_SESSION['v_ti']))
+	{
+		$ticket = session_id().microtime().rand(0,9999999999);
+		$ticket = hash('sha512', $ticket);
+		setcookie('v_tc', $ticket, time() +  (60 * 20));
+		$_SESSION['v_ti'] = $ticket;
 	}
 	else
 	{
-	$this->connexion();
-	}
-
-	if(isset($_GET['action']))
-	{
-		switch ($_GET['action'])
+		if(isset($_COOKIE['v_tc']) == isset($_SESSION['v_ti']))
 		{
-			case "consulter":
-				if (isset($_COOKIE['v_tc']) == isset($_SESSION['v_ti']))
-				{
-					$ticket = session_id().microtime().rand(0,9999999999);
-					$ticket = hash('sha512', $ticket);
-					$_COOKIE['v_tc'] = $ticket;
-					$_SESSION['v_ti'] = $ticket;
-				$this->consulter();
-				}
-				else
-				{
-					$_SESSION = array();
-					session_destroy();
-					header('connexion.php');
-				}
-			break;
-
-			case "renseigner":
-				if (isset($_COOKIE['v_tc']) == isset($_SESSION['v_ti']))
-				{
-					$ticket = session_id().microtime().rand(0,9999999999);
-					$ticket = hash('sha512', $ticket);
-					$_COOKIE['v_tc'] = $ticket;
-					$_SESSION['v_ti'] = $ticket;
-					$this->renseigner();
-				}
-				else
-				{
-					$_SESSION = array();
-					session_destroy();
-					header('connexion.php');
-				}
-			break;
-
-			case "deco":
-				if (isset($_COOKIE['v_tc']) == isset($_SESSION['v_ti']))
-				{
-					$ticket = session_id().microtime().rand(0,9999999999);
-					$ticket = hash('sha512', $ticket);
-					$_COOKIE['v_tc'] = $ticket;
-					$_SESSION['v_ti'] = $ticket;
-				$this->deconnexion();
-				}
-				else
-				{
-					$_SESSION = array();
-					session_destroy();
-					header('connexion.php');
-				}
-			break;
-			
-			case 'retouracc':
-				if (isset($_COOKIE['v_tc']) == isset($_SESSION['v_ti']))
-				{
-					$ticket = session_id().microtime().rand(0,9999999999);
-					$ticket = hash('sha512', $ticket);
-					$_COOKIE['v_tc'] = $ticket;
-					$_SESSION['v_ti'] = $ticket;
-					$this->retourAcc();
-				}
-				else
-				{
-					$_SESSION = array();
-					session_destroy();
-					header('connexion.php');
-				}
-			break;
+			$ticket = session_id().microtime().rand(0,9999999999);
+			$ticket = hash('sha512', $ticket);
+			setcookie('v_tc', $ticket, time() +  (60 * 20));
+			$_SESSION['v_ti'] = $ticket;
 		}
-
+		else
+		{
+			$action = 'retourConnexion';
+			$_SESSION = array();
+			$_COOKIE = array();
+			session_destroy();
+			session_start();
+			$ticket = session_id().microtime().rand(0,9999999999);
+			$ticket = hash('sha512', $ticket);
+			setcookie('v_tc', $ticket, time() +  (60 * 20));
+			$_SESSION['v_ti'] = $ticket;
+		}
 	}
+	switch ($action)
+	{
+		case "consulter":
+			$this->consulter();
+		break;
 
+		case "renseigner":
+				$this->renseigner();
+		break;
 
-
+		case "deco":
+			$this->deconnexion();
+		break;
+		
+		case 'retouracc':
+			$this->retourAcc();
+	    break;
+		case "retourConnexion":
+				session_unset();
+				$_SESSION = array();
+				$this->connexion();
+		break;
+		case 'updateFF':
+			$this->updateFrais();
+		break;
+		case 'insertFHF':
+			$this->insertHorsForfait();
+		break;
+		case 'connexion':
+			$this->verif(htmlspecialchars(strtolower($_POST['identifiant'])), htmlspecialchars(strtolower(Chiffrement::decrypt($crypt))));
+		break;
+		default:
+		$this->connexion();
+		break;
+	}
+	
 }
 public function updateFrais()
 {
@@ -144,7 +142,7 @@ public function insertHorsForfait()
 {
 		$Modele = new \App\Models\Modele();
 
-		$Modele->insertFraisHF(htmlspecialchars($_SESSION['id']), $Modele->moisTrad(), htmlspecialchars($_POST['libelle']), $Modele->today(), htmlspecialchars($_POST['montant']));
+		$Modele->insertFraisHF(htmlspecialchars($_SESSION['id']), $Modele->moisTrad(), htmlspecialchars(strtolower($_POST['libelle'])), $Modele->today(), htmlspecialchars($_POST['montant']));
 		$Modele->modifDateFicheFrais($Modele->today(), htmlspecialchars($_SESSION['id']), $Modele->moisTrad());
 		echo view('acceuil.php');
 }
@@ -195,7 +193,6 @@ public function verif($id, $mdp)
 		
 		if (!empty($data['resultat'][0]->id))
 		{
-			session_start();
 			$cookie_name = "v_tc";
 			$ticket = session_id().microtime().rand(0,9999999999);
 			$ticket = hash('sha512', $ticket);
@@ -243,6 +240,8 @@ public function recupIP()
     return $ip;
 }
 
+
+
 //==========================
 //Fin du code du controleur simple
 //===========================
@@ -250,6 +249,34 @@ public function recupIP()
 //fin de la classe
 }
 
+class Chiffrement extends BaseController
+{
+	private static $cipher = "MYCRYPT_RIJNDAEL_128";
+	private static $key = "WPA2";
+	private static $mode = 'cbc';
 
+	public static function crypt($data)
+	{
+		$keyHash = md5(self::$key);
+		$key = substr($keyHash, 0, mycrypt_get_key_size(self::$cipher, self::$mode));
+		$iv = substr($keyHash, 0, mycrypt_get_block_size(self::$cipher, self::$mode));
+
+		$data=mcrypt_encrypt(self::$cipher, $key, $data, self::$mode, $iv);
+
+		return base64_encode($data);
+	}
+
+	public static function decrypt($data)
+	{
+		$keyHash=md5(self::$key);
+		$key=substr($keyHash, 0,   mcrypt_get_key_size(self::$cipher, self::$mode));
+		$iv=substr($keyHash, 0, mcrypt_get_block_size(self::$cipher, self::$mode));
+
+		$data = base64_decode($data);
+		$data = mcrypt_decrypt(self::$cipher, $key, $data, self::$mode, $iv);
+
+		return rtrim($data);
+	}
+}
 
 ?>

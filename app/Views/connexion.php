@@ -3,7 +3,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>***</title>
+        <title>connexion</title>
         <link rel="stylesheet" href="<?php echo base_url('/public/css/style 2.css'); ?>" /> 
        <body>
 <img
